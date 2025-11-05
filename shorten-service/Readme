@@ -1,0 +1,45 @@
+URL Shortener Service (Golang + Fiber + MongoDB + Redis)
+
+This is a high-performance URL Shortener service built with Go Fiber, MongoDB, and Redis.
+It allows users to submit long URLs, generate a unique short code, and redirect users efficiently.
+
+Features
+Feature	Description
+Shorten URLs	Converts long URLs into short keys like http://localhost:8001/abc1234
+Fast Lookup	Uses Redis Cache to speed up redirects (O(1) lookup)
+Persistent Storage	Original mapping is saved in MongoDB
+Automatic Redirect	Visiting the short URL redirects to the original URL
+Scalable Architecture	Supports thousands of concurrent requests
+Modular Code Structure	Clean architecture → handler, service, repository layers
+
+
+shorten-service/
+│── cmd/
+│   └── main.go              # App entrypoint
+│
+│── internal/
+│   ├── config/              # Env variables, app config
+│   ├── db/
+│   │   ├── mongo.go         # Mongo connection + collection init
+│   │   └── redis.go         # Redis connection
+│   ├── model/
+│   │   └── url.go           # URL struct model
+│   ├── repository/
+│   │   └── url_repository.go# DB + Cache operations
+│   ├── service/
+│   │   └── url_service.go   # Business logic (generate short code etc.)
+│   └── handler/
+│       └── url_handler.go   # HTTP routes & request handling
+│
+├── go.mod
+├── go.sum
+
+Tech Stack
+
+| Component     | Technology                 |
+| ------------- | -------------------------- |
+| **Language**  | Go (Golang)                |
+| **Framework** | Fiber v2                   |
+| **Database**  | MongoDB Atlas              |
+| **Cache**     | Redis                      |
+| **Runtime**   | Docker / Local development |
