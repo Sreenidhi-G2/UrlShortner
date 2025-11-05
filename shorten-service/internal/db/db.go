@@ -9,23 +9,31 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
 )
 
-func Connect(dbURL string) {
+var (
+	Client        *mongo.Client
+	URLCollection *mongo.Collection
+	Ctx           = context.TODO()
+)
+
+func Connect(dbURL string) error {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI(dbURL).SetServerAPIOptions(serverAPI)
 
-	client, err := mongo.Connect(opts)
+	var err error
+
+	Client, err = mongo.Connect(opts)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	defer func() {
-		if err = client.Disconnect(context.TODO()); err != nil {
-			panic(err)
-		}
-	}()
-	// Send a ping to confirm a successful connection
-	if err := client.Ping(context.TODO(), readpref.Primary()); err != nil {
-		panic(err)
+
+	if err = Client.Ping(Ctx, readpref.Primary()); err != nil {
+		return err
 	}
+
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
 
+	database := Client.Database("Shorten_service") // <<-- choose your database name
+	URLCollection = database.Collection("small")   // <<-- choose your collection name
+
+	return nil
 }

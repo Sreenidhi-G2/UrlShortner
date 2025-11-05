@@ -18,6 +18,7 @@ func main() {
 
 	app := fiber.New()
 	db.Connect(cfg.DBUrl)
+	db.ConnectRedis()
 	//app.post("/shorten", handler.ShortenURL)
 
 	log.Println("Server Started")
