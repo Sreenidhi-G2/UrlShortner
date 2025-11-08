@@ -4,6 +4,9 @@ import (
 	"log"
 	"shorten-service/internal/config"
 	"shorten-service/internal/db"
+	"shorten-service/internal/handler"
+	"shorten-service/internal/repository"
+	"shorten-service/internal/service"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
@@ -19,7 +22,12 @@ func main() {
 	app := fiber.New()
 	db.Connect(cfg.DBUrl)
 	db.ConnectRedis()
-	//app.post("/shorten", handler.ShortenURL)
+	urlRepo := &repository.URLRepository{}
+	urlService := service.NewURLService(urlRepo)
+	urlHandler := handler.NewURLHandler(urlService)
+
+	app.Post("/shorten", urlHandler.ShortenURL)
+	app.Get("/:shortKey", urlHandler.Redirect)
 
 	log.Println("Server Started")
 
