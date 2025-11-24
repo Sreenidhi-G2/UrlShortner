@@ -46,3 +46,17 @@ func (h *URLHandler) Redirect(c *fiber.Ctx) error {
 
 	return c.Redirect(originalURL, fiber.StatusTemporaryRedirect)
 }
+
+// GET /resolve/:shortKey
+func (h *URLHandler) ResolveURL(c *fiber.Ctx) error {
+	shortKey := c.Params("shortKey")
+
+	originalURL, err := h.service.GetOriginalURL(shortKey)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "URL not found"})
+	}
+
+	return c.JSON(fiber.Map{
+		"original_url": originalURL,
+	})
+}

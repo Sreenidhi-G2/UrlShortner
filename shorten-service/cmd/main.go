@@ -27,6 +27,7 @@ func main() {
 	urlHandler := handler.NewURLHandler(urlService)
 
 	app.Post("/shorten", urlHandler.ShortenURL)
+	app.Get("/resolve/:shortKey", urlHandler.ResolveURL)
 	app.Get("/:shortKey", urlHandler.Redirect)
 
 	log.Println("Server Started")
