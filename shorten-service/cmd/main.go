@@ -21,7 +21,7 @@ func main() {
 
 	app := fiber.New()
 	db.Connect(cfg.DBUrl)
-	db.ConnectRedis()
+	// db.ConnectRedis()
 	urlRepo := &repository.URLRepository{}
 	urlService := service.NewURLService(urlRepo)
 	urlHandler := handler.NewURLHandler(urlService)

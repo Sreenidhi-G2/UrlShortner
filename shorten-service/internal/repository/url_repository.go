@@ -10,26 +10,20 @@ import (
 
 type URLRepository struct{}
 
+// GetOriginalURL returns the long/original URL for a given short key.
 func (r *URLRepository) GetOriginalURL(shortKey string) (string, error) {
-	// 1) Check Redis first
-	longURL, err := db.RedisClient.Get(db.Ctx, shortKey).Result()
-	if err == nil {
-		return longURL, nil // cache hit
-	}
 
-	// 2) If not found, lookup in Mongo
+	// Directly check MongoDB (Redis removed)
 	var result model.URL
-	err = db.URLCollection.FindOne(db.Ctx, bson.M{"_id": shortKey}).Decode(&result)
+	err := db.URLCollection.FindOne(db.Ctx, bson.M{"_id": shortKey}).Decode(&result)
 	if err != nil {
 		return "", err
 	}
 
-	// 3) Save in Redis (so next lookup is fast)
-	db.RedisClient.Set(db.Ctx, shortKey, result.OriginalURL, 24*time.Hour)
-
 	return result.OriginalURL, nil
 }
 
+// SaveShortURL stores a new shortKey → longURL mapping.
 func (r *URLRepository) SaveShortURL(shortKey, longURL string) error {
 	doc := model.URL{
 		ID:          shortKey,
@@ -39,28 +33,18 @@ func (r *URLRepository) SaveShortURL(shortKey, longURL string) error {
 	}
 
 	_, err := db.URLCollection.InsertOne(db.Ctx, doc)
-
-	if err != nil {
-		return err
-	}
-	db.RedisClient.Set(db.Ctx, shortKey, longURL, 24*time.Hour)
-	db.RedisClient.Set(db.Ctx, "long:"+longURL, shortKey, 24*time.Hour)
-	return nil
-
+	return err
 }
 
+// GetShortKeyByLongURL returns the short code for the given long URL.
 func (r *URLRepository) GetShortKeyByLongURL(longURL string) (string, error) {
-	cacheKey := "long:" + longURL
-	shortKey, err := db.RedisClient.Get(db.Ctx, cacheKey).Result()
-	if err == nil {
-		return shortKey, nil
-	}
 
+	// Directly query MongoDB (Redis removed)
 	var result model.URL
-	err = db.URLCollection.FindOne(db.Ctx, bson.M{"original_url": longURL}).Decode(&result)
+	err := db.URLCollection.FindOne(db.Ctx, bson.M{"original_url": longURL}).Decode(&result)
 	if err != nil {
 		return "", err
 	}
-	db.RedisClient.Set(db.Ctx, cacheKey, result.ShortCode, 24*time.Hour)
+
 	return result.ShortCode, nil
 }
