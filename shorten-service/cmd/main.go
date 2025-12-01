@@ -20,8 +20,11 @@ func main() {
 	cfg := config.LoadConfig()
 
 	app := fiber.New()
-	db.Connect(cfg.DBUrl)
-	// db.ConnectRedis()
+	err := db.Connect(cfg.DBUrl)
+	if err != nil {
+		log.Fatal("Failed to connect to database:", err)
+	}
+
 	urlRepo := &repository.URLRepository{}
 	urlService := service.NewURLService(urlRepo)
 	urlHandler := handler.NewURLHandler(urlService)
