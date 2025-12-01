@@ -7,11 +7,13 @@ import (
 )
 
 type URLHandler struct {
-	service *service.URLService
+	service  *service.URLService
+	BASE_URL string
 }
 
-func NewURLHandler(service *service.URLService) *URLHandler {
-	return &URLHandler{service}
+func NewURLHandler(service *service.URLService, BASE_URL string) *URLHandler {
+	return &URLHandler{service: service, BASE_URL: BASE_URL}
+
 }
 
 // POST /shorten
@@ -31,7 +33,7 @@ func (h *URLHandler) ShortenURL(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"short_url": "http://localhost:8001/" + shortKey,
+		"short_url": h.BASE_URL + "/" + shortKey,
 	})
 }
 

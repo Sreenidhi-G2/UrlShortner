@@ -8,9 +8,10 @@ import (
 )
 
 type Config struct {
-	DBUrl  string
-	Port   string
-	AppEnv string
+	DBUrl    string
+	Port     string
+	AppEnv   string
+	BASE_URL string
 }
 
 func LoadConfig() *Config {
@@ -18,9 +19,10 @@ func LoadConfig() *Config {
 		log.Println("Error loading .env file")
 	}
 	cfg := &Config{
-		DBUrl:  getenv("DB_URL", ""),
-		Port:   getenv("PORT", "8001"),
-		AppEnv: getenv("APP_ENV", "development"),
+		DBUrl:    getenv("DB_URL", ""),
+		Port:     getenv("PORT", "8001"),
+		AppEnv:   getenv("APP_ENV", "development"),
+		BASE_URL: getenv("BASE_URL", ""),
 	}
 	if cfg.DBUrl == "" {
 		log.Fatal("DB_URL not set in environment variables")

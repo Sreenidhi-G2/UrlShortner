@@ -27,7 +27,7 @@ func main() {
 
 	urlRepo := &repository.URLRepository{}
 	urlService := service.NewURLService(urlRepo)
-	urlHandler := handler.NewURLHandler(urlService)
+	urlHandler := handler.NewURLHandler(urlService, cfg.BASE_URL)
 
 	app.Post("/shorten", urlHandler.ShortenURL)
 	app.Get("/resolve/:shortKey", urlHandler.ResolveURL)
