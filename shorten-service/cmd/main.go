@@ -9,6 +9,7 @@ import (
 	"shorten-service/internal/service"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	//"shorten-service/internal/handler"
 )
@@ -20,6 +21,11 @@ func main() {
 	cfg := config.LoadConfig()
 
 	app := fiber.New()
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowHeaders: "Origin, Content-Type, Accept",
+		AllowMethods: "GET,POST,OPTIONS",
+	}))
 	err := db.Connect(cfg.DBUrl)
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
@@ -35,7 +41,7 @@ func main() {
 
 	log.Println("Server Started")
 
-	if err := app.Listen(":8001"); err != nil {
+	if err := app.Listen("0.0.0.0:8001"); err != nil {
 		log.Fatal("Failed to start server", err)
 	}
 

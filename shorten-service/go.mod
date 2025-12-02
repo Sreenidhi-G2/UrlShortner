@@ -1,9 +1,9 @@
 module shorten-service
 
-go 1.25	
+go 1.25
 
 require (
-	github.com/gofiber/fiber/v2 v2.52.9
+	github.com/gofiber/fiber/v2 v2.52.10
 	github.com/joho/godotenv v1.5.1
 	go.mongodb.org/mongo-driver/v2 v2.4.0
 )
