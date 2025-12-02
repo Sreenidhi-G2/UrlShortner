@@ -2,6 +2,7 @@ package handler
 
 import (
 	"shorten-service/internal/service"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -25,6 +26,19 @@ func (h *URLHandler) ShortenURL(c *fiber.Ctx) error {
 	var body request
 	if err := c.BodyParser(&body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
+
+	}
+
+	if strings.HasPrefix(body.URL, h.BASE_URL+"/") {
+		shortKey := strings.TrimPrefix(body.URL, h.BASE_URL+"/")
+
+		originalURL, err := h.service.GetOriginalURL(shortKey)
+		if err == nil {
+			// Return the original long URL instead of creating a new short URL
+			return c.JSON(fiber.Map{
+				"short_url": originalURL,
+			})
+		}
 	}
 
 	shortKey, err := h.service.ShortenURL(body.URL)
